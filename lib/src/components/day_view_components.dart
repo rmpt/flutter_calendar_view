@@ -5,8 +5,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
 import '../extensions.dart';
+import '../style/header_style.dart';
 import '../typedefs.dart';
 import 'common_components.dart';
 
@@ -120,22 +120,18 @@ class DayPageHeader extends CalendarPageHeader {
     VoidCallback? onNextDay,
     AsyncCallback? onTitleTapped,
     VoidCallback? onPreviousDay,
-    Color iconColor = Constants.black,
-    Color backgroundColor = Constants.headerBackground,
     StringProvider? dateStringBuilder,
     required DateTime date,
-    TextStyle? textStyle,
+    HeaderStyle headerStyle = const HeaderStyle(),
   }) : super(
           key: key,
           date: date,
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
           onNextDay: onNextDay,
           onPreviousDay: onPreviousDay,
           onTitleTapped: onTitleTapped,
           dateStringBuilder:
               dateStringBuilder ?? DayPageHeader._dayStringBuilder,
-          textStyle: textStyle,
+          headerStyle: headerStyle,
         );
   static String _dayStringBuilder(DateTime date, {DateTime? secondaryDate}) =>
       "${date.day} - ${date.month} - ${date.year}";

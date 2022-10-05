@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
+import '../style/header_style.dart';
 import '../typedefs.dart';
 
 class CalendarPageHeader extends StatelessWidget {
@@ -29,14 +29,8 @@ class CalendarPageHeader extends StatelessWidget {
   /// Provides string to display as title.
   final StringProvider dateStringBuilder;
 
-  /// backgeound color of header.
-  final Color backgroundColor;
-
-  /// Color of icons at both sides of header.
-  final Color iconColor;
-
-  /// Style of title.
-  final TextStyle? textStyle;
+  /// Style for Calendar's header
+  final HeaderStyle headerStyle;
 
   /// Common header for month and day view In this header user can define format
   /// in which date will be displayed by providing [dateStringBuilder] function.
@@ -48,59 +42,49 @@ class CalendarPageHeader extends StatelessWidget {
     this.onTitleTapped,
     this.onPreviousDay,
     this.secondaryDate,
-    this.backgroundColor = Constants.headerBackground,
-    this.iconColor = Constants.black,
-    this.textStyle,
+    this.headerStyle = const HeaderStyle(),
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-      ),
+      margin: headerStyle.headerMargin,
+      padding: headerStyle.headerPadding,
+      decoration: headerStyle.decoration,
       clipBehavior: Clip.antiAlias,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: onPreviousDay,
-            splashColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-            icon: Icon(
-              Icons.chevron_left,
-              size: 30,
-              color: iconColor,
+          if (headerStyle.leftIconVisible)
+            IconButton(
+              onPressed: onPreviousDay,
+              splashColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              padding: headerStyle.leftIconPadding,
+              icon: headerStyle.leftIcon,
             ),
-          ),
           Expanded(
             child: InkWell(
               onTap: onTitleTapped,
               child: Text(
                 dateStringBuilder(date, secondaryDate: secondaryDate),
-                textAlign: TextAlign.center,
-                style: textStyle,
+                textAlign: headerStyle.titleAlign,
+                style: headerStyle.headerTextStyle,
               ),
             ),
           ),
-          IconButton(
-            onPressed: onNextDay,
-            splashColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            icon: Icon(
-              Icons.chevron_right,
-              size: 30,
-              color: iconColor,
+          if (headerStyle.rightIconVisible)
+            IconButton(
+              onPressed: onNextDay,
+              splashColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              padding: headerStyle.rightIconPadding,
+              icon: headerStyle.rightIcon,
             ),
-          ),
         ],
       ),
     );
