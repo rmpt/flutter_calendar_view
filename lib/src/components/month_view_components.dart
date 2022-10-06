@@ -9,6 +9,7 @@ import '../calendar_event_data.dart';
 import '../constants.dart';
 import '../extensions.dart';
 import '../style/header_style.dart';
+import '../style/week_style.dart';
 import '../typedefs.dart';
 import 'common_components.dart';
 
@@ -233,6 +234,9 @@ class WeekDayTile extends StatelessWidget {
   /// Style for week day string.
   final TextStyle? textStyle;
 
+  /// Style for Calendar's week days.
+  final DaysOfWeekStyle daysOfWeekStyle;
+
   /// Title for week day in month view.
   const WeekDayTile({
     Key? key,
@@ -241,24 +245,26 @@ class WeekDayTile extends StatelessWidget {
     this.displayBorder = true,
     this.textStyle,
     this.weekDayStringBuilder,
+    this.daysOfWeekStyle = const DaysOfWeekStyle(),
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(vertical: 10.0),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border.all(
-          color: Constants.defaultBorderColor,
-          width: displayBorder ? 0.5 : 0,
-        ),
-      ),
+      alignment: daysOfWeekStyle.weekDayAlignment,
+      margin: daysOfWeekStyle.weekDayMargin,
+      padding: daysOfWeekStyle.weekDayPadding,
+      decoration: daysOfWeekStyle.weekDayDecoration ??
+          BoxDecoration(
+            color: backgroundColor,
+            border: Border.all(
+              color: Constants.defaultBorderColor,
+              width: displayBorder ? 0.5 : 0,
+            ),
+          ),
       child: Text(
         weekDayStringBuilder?.call(dayIndex) ?? Constants.weekTitles[dayIndex],
-        style: textStyle ??
+        style: daysOfWeekStyle.weekDayTexStyle ??
             TextStyle(
               fontSize: 17,
               color: Constants.black,

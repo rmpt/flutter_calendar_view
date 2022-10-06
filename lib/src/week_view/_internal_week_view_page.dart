@@ -11,6 +11,7 @@ import '../event_arrangers/event_arrangers.dart';
 import '../event_controller.dart';
 import '../modals.dart';
 import '../painters.dart';
+import '../style/week_style.dart';
 import '../typedefs.dart';
 
 /// A single page for week view.
@@ -93,6 +94,9 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
 
   final EventScrollConfiguration scrollConfiguration;
 
+  /// Style for Calendar's week days.
+  final DaysOfWeekStyle weekDayStyle;
+
   /// A single page for week view.
   const InternalWeekViewPage({
     Key? key,
@@ -121,6 +125,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
     required this.weekDays,
     required this.minuteSlotSize,
     required this.scrollConfiguration,
+    this.weekDayStyle = const DaysOfWeekStyle(),
   }) : super(key: key);
 
   @override
@@ -139,15 +144,21 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
               children: [
                 SizedBox(
                   height: weekTitleHeight,
-                  width: timeLineWidth,
+                  width: timeLineWidth + hourIndicatorSettings.offset,
                 ),
-                ...List.generate(
-                  filteredDates.length,
-                  (index) => SizedBox(
-                    height: weekTitleHeight,
-                    width: weekTitleWidth,
-                    child: weekDayBuilder(
-                      filteredDates[index],
+                Container(
+                  margin: weekDayStyle.margin,
+                  padding: weekDayStyle.padding,
+                  child: Row(
+                    children: List.generate(
+                      filteredDates.length,
+                      (index) => SizedBox(
+                        height: weekTitleHeight,
+                        width: weekTitleWidth,
+                        child: weekDayBuilder(
+                          filteredDates[index],
+                        ),
+                      ),
                     ),
                   ),
                 )

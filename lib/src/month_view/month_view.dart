@@ -13,6 +13,7 @@ import '../enumerations.dart';
 import '../event_controller.dart';
 import '../extensions.dart';
 import '../style/header_style.dart';
+import '../style/week_style.dart';
 import '../typedefs.dart';
 
 class MonthView<T extends Object?> extends StatefulWidget {
@@ -131,6 +132,9 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// Style for MontView header.
   final HeaderStyle headerStyle;
 
+  /// Style for Calendar's week days.
+  final DaysOfWeekStyle daysOfWeekStyle;
+
   /// Main [Widget] to display month view.
   const MonthView({
     Key? key,
@@ -157,6 +161,7 @@ class MonthView<T extends Object?> extends StatefulWidget {
     this.dateStringBuilder,
     this.weekDayStringBuilder,
     this.headerStyle = const HeaderStyle(),
+    this.daysOfWeekStyle = const DaysOfWeekStyle(),
   }) : super(key: key);
 
   @override
@@ -294,6 +299,9 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                     children: [
                       Container(
                         width: _width,
+                        color: Colors.blueGrey,
+                        padding: widget.daysOfWeekStyle.padding,
+                        margin: widget.daysOfWeekStyle.margin,
                         child: Row(
                           children: List.generate(
                             7,
@@ -463,6 +471,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     return WeekDayTile(
       dayIndex: index,
       weekDayStringBuilder: widget.weekDayStringBuilder,
+      daysOfWeekStyle: widget.daysOfWeekStyle,
     );
   }
 
