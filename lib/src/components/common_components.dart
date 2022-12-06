@@ -25,18 +25,27 @@ class CalendarPageHeader extends StatelessWidget {
   /// Secondary date. This date will be used when we need to define a
   /// range of dates.
   /// [date] can be starting date and [secondaryDate] can be end date.
+  ///
   final DateTime? secondaryDate;
 
   /// Provides string to display as title.
   final StringProvider dateStringBuilder;
 
-  // TODO: Need to remove after next release
+  // TODO: Need to remove after next major release
   /// background color of header.
+  ///
+  /// NOTE: This property is deprecated.
+  /// Use [HeaderStyle.decoration] to provide colors to header.
   @Deprecated("Use Header Style to provide background")
   final Color backgroundColor;
 
-  // TODO: Need to remove after next release
+  // TODO: Need to remove after next major release
   /// Color of icons at both sides of header.
+  ///
+  /// NOTE: This property id deprecated. Use
+  /// [HeaderStyle.leftIconStyle] or [HeaderStyle.rightIconStyle]
+  /// to provide style to icons.
+  ///
   @Deprecated("Use Header Style to provide icon color")
   final Color iconColor;
 
@@ -53,9 +62,9 @@ class CalendarPageHeader extends StatelessWidget {
     this.onTitleTapped,
     this.onPreviousDay,
     this.secondaryDate,
-    @Deprecated("Use Header Style to provide background")
+    @Deprecated("Use HeaderStyle.decoration to provide background")
         this.backgroundColor = Constants.headerBackground,
-    @Deprecated("Use Header Style to provide icon color")
+    @Deprecated("Use HeaderStyle to provide icon color")
         this.iconColor = Constants.black,
     this.headerStyle = const HeaderStyle(),
   }) : super(key: key);
@@ -70,7 +79,7 @@ class CalendarPageHeader extends StatelessWidget {
           headerStyle.decoration ?? BoxDecoration(color: backgroundColor),
       clipBehavior: Clip.antiAlias,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: headerStyle.mainAxisAlignment,
         children: [
           if (headerStyle.leftIconVisible)
             IconButton(
@@ -83,8 +92,8 @@ class CalendarPageHeader extends StatelessWidget {
               icon: headerStyle.leftIcon ??
                   Icon(
                     Icons.chevron_left,
-                    size: 30,
-                    color: iconColor,
+                    size: headerStyle.leftIconStyle.size,
+                    color: headerStyle.leftIconStyle.color,
                   ),
             ),
           Expanded(
@@ -108,8 +117,8 @@ class CalendarPageHeader extends StatelessWidget {
               icon: headerStyle.rightIcon ??
                   Icon(
                     Icons.chevron_right,
-                    size: 30,
-                    color: iconColor,
+                    size: headerStyle.rightIconStyle.size,
+                    color: headerStyle.rightIconStyle.color,
                   ),
             ),
         ],

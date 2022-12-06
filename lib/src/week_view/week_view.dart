@@ -582,15 +582,17 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
       DateTime endDuration) {
     if (events.isNotEmpty)
       return RoundedEventTile(
-        borderRadius: BorderRadius.circular(6.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.0),
+          color: events[0].color,
+        ),
         title: events[0].title,
         titleStyle: TextStyle(
           fontSize: 12,
           color: events[0].color.accent,
         ),
         totalEvents: events.length,
-        padding: EdgeInsets.all(7.0),
-        backgroundColor: events[0].color,
+        padding: const EdgeInsets.all(7.0),
       );
     else
       return Container();
