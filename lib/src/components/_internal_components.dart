@@ -139,16 +139,16 @@ class TimeLine extends StatefulWidget {
   double get _halfHourHeight => hourHeight / 2;
 
   /// Time line to display time at left side of day or week view.
-  const TimeLine(
-      {Key? key,
-      required this.timeLineWidth,
-      required this.hourHeight,
-      required this.height,
-      required this.timeLineOffset,
-      required this.timeLineBuilder,
-      this.showHalfHours = false,
-      required this.liveTimeIndicatorSettings})
-      : super(key: key);
+  const TimeLine({
+    Key? key,
+    required this.timeLineWidth,
+    required this.hourHeight,
+    required this.height,
+    required this.timeLineOffset,
+    required this.timeLineBuilder,
+    required this.liveTimeIndicatorSettings,
+    this.showHalfHours = false,
+  }) : super(key: key);
 
   @override
   State<TimeLine> createState() => _TimeLineState();
@@ -210,7 +210,7 @@ class _TimeLineState extends State<TimeLine> {
               _timelinePositioned(
                 topPosition: hourHeight * i - timeLineOffset + _halfHourHeight,
                 bottomPosition:
-                    height - (hourHeight * (i + 1)) + timeLineOffset,
+                height - (hourHeight * (i + 1)) + timeLineOffset,
                 hour: i,
                 minutes: 30,
               ),
