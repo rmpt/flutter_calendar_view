@@ -22,8 +22,13 @@ class Constants {
   static const Color white = Color(0xffffffff);
   static const Color offWhite = Color(0xfff0f0f0);
   static const Color headerBackground = Color(0xFFDCF0FF);
+
   static Color get randomColor {
     return Color.fromRGBO(_random.nextInt(_maxColor),
         _random.nextInt(_maxColor), _random.nextInt(_maxColor), 1);
   }
+
+  static const int monthHasFourWeek = 28;
+  static const int monthHasFiveWeek = 35;
+  static const int monthHasSixWeek = 42;
 }

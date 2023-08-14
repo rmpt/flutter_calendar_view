@@ -138,9 +138,13 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// Option for SafeArea.
   final SafeAreaOption safeAreaOption;
 
+  /// Hiding the additional week that doesn't belong in the current month
+  final bool hideExtraWeek;
+
   /// Main [Widget] to display month view.
   const MonthView({
     Key? key,
+    this.hideExtraWeek = false,
     this.showBorder = true,
     this.borderColor = Constants.defaultBorderColor,
     this.cellBuilder,
@@ -166,7 +170,9 @@ class MonthView<T extends Object?> extends StatefulWidget {
     this.weekDayStringBuilder,
     this.headerStyle = const HeaderStyle(),
     this.safeAreaOption = const SafeAreaOption(),
-  }) : super(key: key);
+  })  : assert(!(hideExtraWeek == true && useAvailableVerticalSpace == true),
+            "Can't user both property at same time"),
+        super(key: key);
 
   @override
   MonthViewState<T> createState() => MonthViewState<T>();
@@ -284,79 +290,89 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
       child: SizedBox(
         width: _width,
         child: Column(
+          mainAxisSize:
+              widget.hideExtraWeek ? MainAxisSize.min : MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: _width,
               child: _headerBuilder(_currentDate),
             ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: _onPageChange,
-                itemBuilder: (_, index) {
-                  final date = DateTime(_minDate.year, _minDate.month + index);
-                  final weekDays = date.datesOfWeek(start: widget.startDay);
+            Container(
+              width: _width,
+              child: Row(
+                children: List.generate(
+                  7,
+                  (index) {
+                    final date =
+                        DateTime(_minDate.year, _minDate.month + index);
+                    final weekDays = date.datesOfWeek(start: widget.startDay);
 
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: _width,
-                        child: Row(
-                          children: List.generate(
-                            7,
-                            (index) => Expanded(
-                              child: SizedBox(
-                                width: _cellWidth,
-                                child:
-                                    _weekBuilder(weekDays[index].weekday - 1),
-                              ),
-                            ),
-                          ),
-                        ),
+                    return Expanded(
+                      child: SizedBox(
+                        width: _cellWidth,
+                        child: _weekBuilder(weekDays[index].weekday - 1),
                       ),
-                      Expanded(
-                        child: LayoutBuilder(builder: (context, constraints) {
-                          final _cellAspectRatio =
-                              widget.useAvailableVerticalSpace
-                                  ? calculateCellAspectRatio(
-                                      constraints.maxHeight,
-                                    )
-                                  : widget.cellAspectRatio;
-
-                          return SizedBox(
-                            height: _height,
-                            width: _width,
-                            child: _MonthPageBuilder<T>(
-                              key: ValueKey(date.toIso8601String()),
-                              onCellTap: widget.onCellTap,
-                              onDateLongPress: widget.onDateLongPress,
-                              width: _width,
-                              height: _height,
-                              controller: controller,
-                              borderColor: widget.borderColor,
-                              borderSize: widget.borderSize,
-                              cellBuilder: _cellBuilder,
-                              cellRatio: _cellAspectRatio,
-                              date: date,
-                              showBorder: widget.showBorder,
-                              startDay: widget.startDay,
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
-                  );
-                },
-                itemCount: _totalMonths,
+                    );
+                  },
+                ),
               ),
+            ),
+            Flexible(
+              fit: widget.hideExtraWeek ? FlexFit.loose : FlexFit.tight,
+              child: widget.hideExtraWeek
+                  ? SingleChildScrollView(
+                      physics: ClampingScrollPhysics(),
+                      child: ExpandablePageView.builder(
+                        controller: _pageController,
+                        onPageChanged: _onPageChange,
+                        itemBuilder: _itemBuilder,
+                        itemCount: _totalMonths,
+                      ),
+                    )
+                  : PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: _onPageChange,
+                      itemBuilder: _itemBuilder,
+                      itemCount: _totalMonths,
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _itemBuilder(_, int index) {
+    final date = DateTime(_minDate.year, _minDate.month + index);
+    return LayoutBuilder(builder: (context, constraints) {
+      final _cellAspectRatio = widget.useAvailableVerticalSpace
+          ? calculateCellAspectRatio(
+              constraints.maxHeight,
+            )
+          : widget.cellAspectRatio;
+
+      return SizedBox(
+        height: widget.hideExtraWeek ? null : _height,
+        width: _width,
+        child: _MonthPageBuilder<T>(
+          key: ValueKey(date.toIso8601String()),
+          onCellTap: widget.onCellTap,
+          onDateLongPress: widget.onDateLongPress,
+          width: _width,
+          height: _height,
+          controller: controller,
+          borderColor: widget.borderColor,
+          borderSize: widget.borderSize,
+          cellBuilder: _cellBuilder,
+          cellRatio: _cellAspectRatio,
+          date: date,
+          showBorder: widget.showBorder,
+          startDay: widget.startDay,
+          hideExtraWeek: widget.hideExtraWeek,
+        ),
+      );
+    });
   }
 
   /// Returns [EventController] associated with this Widget.
@@ -588,6 +604,7 @@ class _MonthPageBuilder<T> extends StatelessWidget {
   final CellTapCallback<T>? onCellTap;
   final DatePressCallback? onDateLongPress;
   final WeekDays startDay;
+  final bool hideExtraWeek;
 
   const _MonthPageBuilder({
     Key? key,
@@ -603,14 +620,22 @@ class _MonthPageBuilder<T> extends StatelessWidget {
     required this.onCellTap,
     required this.onDateLongPress,
     required this.startDay,
+    this.hideExtraWeek = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final monthDays = date.datesOfMonths(startDay: startDay);
+    final weekCount = hideExtraWeek
+        ? monthDays[Constants.monthHasFiveWeek].month == date.month
+            ? Constants.monthHasSixWeek
+            : monthDays[Constants.monthHasFourWeek].month == date.month
+                ? Constants.monthHasFiveWeek
+                : Constants.monthHasFourWeek
+        : Constants.monthHasSixWeek;
     return Container(
       width: width,
-      height: height,
+      height: hideExtraWeek ? null : height,
       child: GridView.builder(
         padding: EdgeInsets.zero,
         physics: ClampingScrollPhysics(),
@@ -618,7 +643,7 @@ class _MonthPageBuilder<T> extends StatelessWidget {
           crossAxisCount: 7,
           childAspectRatio: cellRatio,
         ),
-        itemCount: 42,
+        itemCount: weekCount,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           final events = controller.getEventsOnDay(monthDays[index]);
