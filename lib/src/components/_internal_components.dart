@@ -134,10 +134,6 @@ class TimeLine extends StatefulWidget {
   /// height of indicator and also allow to show time with custom format.
   final LiveTimeIndicatorSettings liveTimeIndicatorSettings;
 
-  static DateTime get _date => DateTime.now();
-
-  double get _halfHourHeight => hourHeight / 2;
-
   /// Time line to display time at left side of day or week view.
   const TimeLine({
     Key? key,
@@ -150,6 +146,8 @@ class TimeLine extends StatefulWidget {
     this.showHalfHours = false,
   }) : super(key: key);
 
+  static DateTime get _date => DateTime.now();
+
   @override
   State<TimeLine> createState() => _TimeLineState();
 }
@@ -157,6 +155,8 @@ class TimeLine extends StatefulWidget {
 class _TimeLineState extends State<TimeLine> {
   late Timer _timer;
   late TimeOfDay _currentTime;
+
+  double get _halfHourHeight => widget.hourHeight / 2;
 
   @override
   void initState() {
@@ -201,16 +201,21 @@ class _TimeLineState extends State<TimeLine> {
         children: [
           for (int i = 1; i < Constants.hoursADay; i++)
             _timelinePositioned(
-              topPosition: hourHeight * i - timeLineOffset,
-              bottomPosition: height - (hourHeight * (i + 1)) + timeLineOffset,
+              topPosition: widget.hourHeight * i - widget.timeLineOffset,
+              bottomPosition: widget.height -
+                  (widget.hourHeight * (i + 1)) +
+                  widget.timeLineOffset,
               hour: i,
             ),
-          if (showHalfHours)
+          if (widget.showHalfHours)
             for (int i = 0; i < Constants.hoursADay; i++)
               _timelinePositioned(
-                topPosition: hourHeight * i - timeLineOffset + _halfHourHeight,
-                bottomPosition:
-                height - (hourHeight * (i + 1)) + timeLineOffset,
+                topPosition: widget.hourHeight * i -
+                    widget.timeLineOffset +
+                    _halfHourHeight,
+                bottomPosition: widget.height -
+                    (widget.hourHeight * (i + 1)) +
+                    widget.timeLineOffset,
                 hour: i,
                 minutes: 30,
               ),
@@ -230,14 +235,14 @@ class _TimeLineState extends State<TimeLine> {
     /// current min is greater than 15 min and is current hour
 
     return Visibility(
-      visible: !((_currentTime.minute >= 45 && _currentTime.hour == i - 1) ||
-          (_currentTime.minute <= 15 && _currentTime.hour == i)),
+      visible: !((_currentTime.minute >= 45 && _currentTime.hour == hour - 1) ||
+          (_currentTime.minute <= 15 && _currentTime.hour == hour)),
       child: Positioned(
-        top: widget.hourHeight * i - widget.timeLineOffset,
+        top: widget.hourHeight * hour - widget.timeLineOffset,
         left: 0,
         right: 0,
         bottom: widget.height -
-            (widget.hourHeight * (i + 1)) +
+            (widget.hourHeight * (hour + 1)) +
             widget.timeLineOffset,
         child: Container(
           height: widget.hourHeight,
@@ -247,7 +252,7 @@ class _TimeLineState extends State<TimeLine> {
               TimeLine._date.year,
               TimeLine._date.month,
               TimeLine._date.day,
-              i,
+              hour,
             ),
           ),
         ),

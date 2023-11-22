@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 
 import '../calendar_view.dart';
-import 'enumerations.dart';
 
 /// Settings for hour lines
 class HourIndicatorSettings {
