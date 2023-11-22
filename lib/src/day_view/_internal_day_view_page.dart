@@ -47,7 +47,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
   final bool showLiveLine;
 
   /// Settings for live time indicator.
-  final HourIndicatorSettings liveTimeIndicatorSettings;
+  final LiveTimeIndicatorSettings liveTimeIndicatorSettings;
 
   /// Height occupied by one minute of time span.
   final double heightPerMinute;
@@ -215,6 +215,7 @@ class InternalDayViewPage<T extends Object?> extends StatelessWidget {
                       timeLineWidth: timeLineWidth,
                       showHalfHours: showHalfHours,
                       key: ValueKey(heightPerMinute),
+                      liveTimeIndicatorSettings: liveTimeIndicatorSettings,
                     ),
                     if (showLiveLine && liveTimeIndicatorSettings.height > 0)
                       IgnorePointer(
